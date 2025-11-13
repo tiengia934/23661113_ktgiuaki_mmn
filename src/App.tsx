@@ -24,7 +24,7 @@ import LoginPage from "./LoginPage";
 //@ts-ignore
 import LogoutPage from "./LogoutPage";
 //@ts-ignore
-import ProtectedRoute from "./ProtectedRoute";
+import ProtectedRoute from "./Protectedroute";
 //@ts-ignore
 import ListProduct_SP_Admin from "./ListProduct_SP_Admin";
 //@ts-ignore
