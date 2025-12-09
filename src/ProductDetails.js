@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "./supabaseClient";
+import { useCart } from "./CartContext";
 
 const ProductDetail = () => {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
   const navigate = useNavigate();
+
+  const { addToCart } = useCart();
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -34,11 +37,21 @@ const ProductDetail = () => {
     );
   }
 
+  const handleAddToCart = (p) => {
+    // 🛑 QUAN TRỌNG: Ngăn sự kiện click lan ra thẻ cha (tránh chuyển trang)
+    console.log("Product", product);
+    if (p != null) {
+      addToCart(p);
+      alert(`Đã thêm "${p.title}" vào giỏ hàng!`);
+    }
+  };
+
   return (
     <div
       style={{
         maxWidth: "900px",
         margin: "30px auto",
+        marginTop: "110px",
         padding: "20px",
         border: "1px solid #ddd",
         borderRadius: "10px",
@@ -52,6 +65,7 @@ const ProductDetail = () => {
           backgroundColor: "#007bff",
           color: "#fff",
           border: "none",
+          fontSize: "17px",
           padding: "8px 14px",
           borderRadius: "6px",
           cursor: "pointer",
@@ -89,6 +103,7 @@ const ProductDetail = () => {
               width: "100%",
               height: "100%",
               objectFit: "contain",
+              borderRadius: "10px",
             }}
           />
         </div>
@@ -122,12 +137,13 @@ const ProductDetail = () => {
               marginTop: "20px",
               backgroundColor: "#28a745",
               color: "#fff",
+              fontSize: "18px",
               border: "none",
               padding: "10px 16px",
               borderRadius: "6px",
               cursor: "pointer",
             }}
-            onClick={() => alert("Đã thêm vào giỏ hàng!")}
+            onClick={(e) => handleAddToCart(product)}
           >
             🛒 Thêm vào giỏ hàng
           </button>
@@ -137,4 +153,4 @@ const ProductDetail = () => {
   );
 };
 
-export default ProductDetail;
+export default ProductDetails;
