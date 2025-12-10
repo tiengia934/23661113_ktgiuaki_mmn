@@ -43,7 +43,15 @@ const LoginPage = () => {
 
       // 4️⃣ So sánh hash
       if (data.password_hash === hashedPassword) {
-        localStorage.setItem("user", JSON.stringify(data));
+        // ✅ LƯU ĐÚNG DẠNG Layout.jsx CẦN
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            username: data.username,
+            role: data.role || "user",
+          })
+        );
+
         alert("✅ Đăng nhập thành công!");
         navigate("/");
       } else {
