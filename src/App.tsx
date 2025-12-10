@@ -24,8 +24,12 @@ import ProtectedRoute from "./Protectedroute";
 import ListProducts_SP_Admin from "./ListProduct_SP_Admin";
 // @ts-ignore
 import EditProduct from "./EditProduct";
-
+// @ts-ignore
 import ChatPage from "./ChatPage"; // ✅ Import trang Chat
+// @ts-ignore
+import Contact from "./Contact";
+
+<Route path="/contact" element={<Contact />} />
 
 // --- IMPORT MỚI CHO GIỎ HÀNG ---
 import { CartProvider } from "./CartContext"; // Context vừa sửa ở Bước 1
@@ -52,7 +56,7 @@ export default function App() {
             <Route path="/admin/edit/:id" element={<EditProduct />} />
             <Route path="login" element={<LoginPage />} />
             <Route path="logout" element={<LogoutPage />} />
-
+            <Route path="Contact" element={<Contact />} />
             <Route
               path="admin/products"
               element={
