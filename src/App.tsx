@@ -7,13 +7,13 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 // @ts-ignore
 import Layout from "./Layout";
 // @ts-ignore
-import ListProducts_SP from "./ListProduct_SP";
+import ListProducts_SP from "./Listsanpham";
 // @ts-ignore
 import Trang1 from "./Trang1";
 // @ts-ignore
 import Trang2 from "./Trang2";
 // @ts-ignore
-import Chitietsanpham from "./Chitietsanpham";
+import Chitietsanpham from "./ProductDetails";
 // @ts-ignore
 import LoginPage from "./LoginPage";
 // @ts-ignore
@@ -48,7 +48,7 @@ export default function App() {
 
             <Route path="trang1" element={<Trang1 />} />
             <Route path="trang2" element={<Trang2 />} />
-            <Route path="sanpham/:id" element={<Chitietsanpham />} />
+            <Route path="detail/:id" element={<Chitietsanpham />} />
             <Route path="/admin/edit/:id" element={<EditProduct />} />
             <Route path="login" element={<LoginPage />} />
             <Route path="logout" element={<LogoutPage />} />

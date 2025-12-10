@@ -1,87 +1,151 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "./supabaseClient";
+import { useCart } from "./CartContext"; // ✅ 1. Import Context
 
-const ListSanpham = () => {
-  const [products, setProducts] = useState([]);
-  const [activeProduct, setActiveProduct] = useState(null); // State để quản lý sản phẩm được nhấn
+const ListProducts_SP = () => {
+  const [listProduct, setListProduct] = useState([]);
+  const navigate = useNavigate();
 
-  // Lấy dữ liệu từ API khi component được render
+  // ✅ 2. Lấy hàm addToCart từ Context
+  const { addToCart } = useCart();
+
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch("https://fakestoreapi.com/products");
-        const data = await response.json();
-        setProducts(data); // Cập nhật dữ liệu vào state
-      } catch (error) {
-        console.error("Error fetching products:", error);
+        const { data, error } = await supabase
+          .from("product1")
+          .select("*")
+          .order("id", { ascending: true });
+        if (error) throw error;
+        setListProduct(data);
+      } catch (err) {
+        console.error("Lỗi khi lấy dữ liệu:", err.message);
       }
     };
-
     fetchProducts();
   }, []);
 
-  // Hàm để toggle phần mô tả sản phẩm khi nhấn vào sản phẩm
-  const handleToggleDescription = (id) => {
-    if (activeProduct === id) {
-      setActiveProduct(null); // Nếu sản phẩm đang mở, đóng lại
-    } else {
-      setActiveProduct(id); // Mở mô tả cho sản phẩm vừa nhấn
-    }
+  // Hàm xử lý khi bấm "Thêm vào giỏ"
+  const handleAddToCart = (e, product) => {
+    // 🛑 QUAN TRỌNG: Ngăn sự kiện click lan ra thẻ cha (tránh chuyển trang)
+    e.stopPropagation();
+
+    addToCart(product);
+    alert(`Đã thêm "${product.title}" vào giỏ hàng!`);
   };
 
   return (
-    <div
-      style={{
-        minHeight: "100vh", // Chiếm toàn bộ chiều cao màn hình
-        display: "flex",
-        justifyContent: "center", // Căn giữa ngang
-        backgroundColor: "#f9f9f9", // Màu nền
-        padding: "20px",
-      }}
-    >
+    <div style={{ padding: "20px" }}>
+      <h2>Danh sách sản phẩm</h2>
+
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
-          gap: "16px",
-          maxWidth: "1000px", // Giới hạn chiều rộng
-          width: "100%",
+          width: "1000px",
+          gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
+          gap: "20px",
         }}
       >
-        {products.map((product) => (
+        {listProduct.map((p) => (
           <div
-            key={product.id}
+            key={p.id}
+            // Sự kiện click vào thẻ -> Chuyển sang trang chi tiết
+            onClick={() => navigate(`/detail/${p.id}`)}
             style={{
-              height: "auto", // Tự động điều chỉnh chiều cao
               border: "1px solid #ddd",
-              borderRadius: "8px",
-              padding: "10px",
+              borderRadius: "10px",
+              padding: "12px",
               textAlign: "center",
-              backgroundColor: "#fff",
-              boxShadow: "0 2px 8px rgba(0,0,0,0.5)",
-              cursor: "pointer", // Con trỏ thay đổi khi hover
+              cursor: "pointer",
+              background: "#fff",
+              boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
+              transition: "transform 0.2s ease, box-shadow 0.2s ease",
+              display: "flex", // Flex để căn chỉnh chiều cao
+              flexDirection: "column",
+              justifyContent: "space-between",
             }}
-            onClick={() => handleToggleDescription(product.id)} // Khi nhấn vào sản phẩm, gọi hàm toggle
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = "translateY(-4px)";
+              e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.15)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = "translateY(0)";
+              e.currentTarget.style.boxShadow = "0 2px 6px rgba(0,0,0,0.1)";
+            }}
           >
-            <img
-              src={product.image}
-              alt={product.title}
-              style={{
-                height: "140px",
-                objectFit: "cover",
-                borderRadius: "6px",
-              }}
-            />
-            <h3 style={{ margin: "10px 0 5px" }}>{product.title}</h3>
-            <p>{product.category}</p>
-            <p style={{ margin: "10px 0 5px" }}>${product.price}</p>
+            {/* Phần nội dung sản phẩm */}
+            <div>
+              <div
+                style={{
+                  width: "100%",
+                  height: "200px",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  overflow: "hidden",
+                  borderRadius: "8px",
+                  backgroundColor: "#f9f9f9",
+                }}
+              >
+                <img
+                  src={p.image}
+                  alt={p.title}
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                  }}
+                />
+              </div>
 
-            {/* Chỉ hiển thị mô tả nếu sản phẩm này được nhấn */}
-            {activeProduct === product.id && (
-              <p style={{ marginTop: "10px", color: "#555" }}>
-                {product.description}
+              <h4
+                style={{
+                  margin: "10px 0 5px",
+                  fontSize: "1rem",
+                  minHeight: "40px",
+                }}
+              >
+                {p.title}
+              </h4>
+              <p style={{ color: "#e63946", fontWeight: "bold", margin: "0" }}>
+                ${p.price}
               </p>
-            )}
+              <small
+                style={{
+                  color: "#555",
+                  display: "block",
+                  marginBottom: "10px",
+                }}
+              >
+                ⭐ {p.rating_rate} | ({p.rating_count} đánh giá)
+              </small>
+            </div>
+
+            {/* ✅ 3. Nút Thêm vào giỏ */}
+            <button
+              onClick={(e) => handleAddToCart(e, p)} // Truyền event 'e' vào
+              style={{
+                width: "100%",
+                padding: "10px",
+                backgroundColor: "#007bff",
+                color: "white",
+                border: "none",
+                borderRadius: "6px",
+                cursor: "pointer",
+                fontWeight: "600",
+                marginTop: "10px",
+                transition: "background 0.2s",
+              }}
+              onMouseOver={(e) =>
+                (e.currentTarget.style.backgroundColor = "#0056b3")
+              }
+              onMouseOut={(e) =>
+                (e.currentTarget.style.backgroundColor = "#007bff")
+              }
+            >
+              🛒 Thêm vào giỏ
+            </button>
           </div>
         ))}
       </div>
@@ -89,4 +153,4 @@ const ListSanpham = () => {
   );
 };
 
-export default ListSanpham;
+export default ListProducts_SP;

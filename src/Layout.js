@@ -1,16 +1,17 @@
-// src/components/Layout.jsx (hoặc đường dẫn tương ứng)
+// src/components/Layout.jsx
 
 import "./assets/css/layout.css";
 import logo from "./assets/images/Ten-truong-do-1000x159.png";
 import "./ProductDetails";
 import { Outlet, useNavigate, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-// ✅ SỬA LỖI & KẾT NỐI: Import hook giỏ hàng
+// ✅ KẾT NỐI: Import hook giỏ hàng
 import { useCart } from "./CartContext"; // Đảm bảo đường dẫn này đúng
 
 const Layout = () => {
   const [user, setUser] = useState(null);
-  const navigate = useNavigate(); // ✅ THAY ĐỔI: Lấy totalQuantity TỪ HOOK useCart // Thay thế: const totalQuantity = 2;
+  const navigate = useNavigate();
+  // ✅ Lấy totalQuantity TỪ HOOK useCart
   const { totalQuantity } = useCart();
 
   useEffect(() => {
@@ -30,11 +31,9 @@ const Layout = () => {
     <div className="layout-container">
       {/* --- HEADER CHÍNH (TỔNG HỢP 3 PHẦN TỐI ƯU) --- */}{" "}
       <header className="main-header">
-        {" "}
-        {/* 1. Thanh Top Bar (Đăng nhập/Đăng xuất) *
-    </div>
-
-    {/* 2. Thanh Logo và Tìm kiếm */}{" "}
+        {/* 1. Thanh Top Bar (Phần này không có trong code gốc, giữ cấu trúc) */}
+        {/* <div className="top-bar">...</div> */}
+        {/* 2. Thanh Logo và Tìm kiếm */}{" "}
         <div className="logo-search-bar">
           {" "}
           <Link to="/" className="logo-link">
@@ -62,11 +61,13 @@ const Layout = () => {
         <nav className="main-nav-bar">
           {" "}
           <div className="nav-links">
-            <Link to="/">Trang chủ</Link> <Link to="/trang1">Sản phẩm</Link>{" "}
+            <Link to="/">Trang chủ</Link>
+            <Link to="/trang1">Sản phẩm</Link>{" "}
             <Link to="/trang2">Sinh viên</Link>{" "}
             <Link to="/chat">Chat với AI</Link>{" "}
+            {/* ✅ SỬA LỖI: Thay thế <a> bằng <Link> để định tuyến React Router hoạt động */}
             {user && user.username === "admin" ? (
-              <a href="/admin/products">Quản trị</a>
+              <Link to="/admin/products">Quản trị</Link> // ⬅️ Đã SỬA
             ) : (
               <span className="disabled-link">Quản trị</span>
             )}{" "}
@@ -87,9 +88,11 @@ const Layout = () => {
                 </button>{" "}
               </>
             ) : (
-              <a href="/login" className="login-btn">
+              <Link to="/login" className="login-btn">
+                {" "}
+                {/* Đã đổi thành Link */}
                 Đăng nhập{" "}
-              </a>
+              </Link>
             )}{" "}
           </div>{" "}
         </nav>{" "}
