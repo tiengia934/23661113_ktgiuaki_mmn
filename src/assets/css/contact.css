@@ -1,0 +1,135 @@
+.contact-container {
+    max-width: 1100px;
+    margin: auto;
+    padding: 40px 20px;
+  }
+  
+  .contact-title {
+    text-align: center;
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 10px;
+  }
+  
+  .contact-desc {
+    text-align: center;
+    color: #555;
+    margin-bottom: 40px;
+  }
+  
+  .contact-content {
+    display: flex;
+    gap: 40px;
+    flex-wrap: wrap;
+  }
+  
+  .contact-form {
+    flex: 1;
+    min-width: 300px;
+    background: #fff;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+  }
+  
+  .contact-form label {
+    font-weight: 600;
+    margin-top: 15px;
+    display: block;
+  }
+  
+  .contact-form input,
+  .contact-form textarea {
+    width: 100%;
+    padding: 12px;
+    margin-top: 5px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    outline: none;
+    transition: 0.3s;
+  }
+  
+  .contact-form input:focus,
+  .contact-form textarea:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 5px rgba(0,123,255,0.3);
+  }
+  
+  .contact-btn {
+    margin-top: 20px;
+    width: 100%;
+    padding: 12px;
+    background: var(--primary-color);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  
+  .contact-btn:hover {
+    background: var(--secondary-color);
+  }
+  
+  .contact-info {
+    flex: 1;
+    min-width: 300px;
+    padding: 25px;
+  }
+  
+  .contact-info h4 {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 15px;
+  }
+  
+  .contact-info p {
+    font-size: 15px;
+    color: #444;
+    margin-bottom: 12px;
+  }
+  
+  .social-icons i {
+    font-size: 28px;
+    margin-right: 15px;
+    cursor: pointer;
+    color: #555;
+    transition: 0.3s;
+  }
+  
+  .social-icons i:hover {
+    color: var(--primary-color);
+    transform: translateY(-3px);
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    .contact-content {
+      flex-direction: column;
+    }
+  }
+  .contact-status {
+    margin-top: 15px;
+    font-weight: 600;
+    color: var(--primary-color);
+  }
+  .contact-status {
+    margin-top: 15px;
+    padding: 10px;
+    border-radius: 8px;
+    font-weight: 600;
+    text-align: center;
+    background: #e8ffe8;
+    color: #0a8a0a;
+    border: 1px solid #8fd98f;
+    animation: fadeIn 0.3s ease;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  

@@ -1,154 +1,114 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { supabase } from "./supabaseClient";
-import { useCart } from "./CartContext"; // ✅ 1. Import Context
+import { useNavigate } from "react-router-dom";
+import { useCart } from "./CartContext";
 
 const ListProducts_SP = () => {
-  const [listProduct, setListProduct] = useState([]);
-  const navigate = useNavigate();
+  const [products, setProducts] = useState([]);
+  const [search, setSearch] = useState("");
+  const [category, setCategory] = useState("all");
+  const [categories, setCategories] = useState([]);
 
-  // ✅ 2. Lấy hàm addToCart từ Context
+  const navigate = useNavigate();
   const { addToCart } = useCart();
 
+  // Lấy tất cả category
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const { data, error } = await supabase
-          .from("product1")
-          .select("*")
-          .order("id", { ascending: true });
-        if (error) throw error;
-        setListProduct(data);
-      } catch (err) {
-        console.error("Lỗi khi lấy dữ liệu:", err.message);
-      }
+    const fetchCategories = async () => {
+      const { data } = await supabase.from("product1").select("category");
+      const unique = [...new Set(data.map((item) => item.category))];
+      setCategories(unique);
     };
-    fetchProducts();
+    fetchCategories();
   }, []);
 
-  // Hàm xử lý khi bấm "Thêm vào giỏ"
-  const handleAddToCart = (e, product) => {
-    // 🛑 QUAN TRỌNG: Ngăn sự kiện click lan ra thẻ cha (tránh chuyển trang)
-    e.stopPropagation();
+  // Lấy danh sách sản phẩm
+  useEffect(() => {
+    const fetchProducts = async () => {
+      let query = supabase.from("product1").select("*");
 
-    addToCart(product);
-    alert(`Đã thêm "${product.title}" vào giỏ hàng!`);
+      if (category !== "all") {
+        query = query.eq("category", category);
+      }
+
+      if (search.trim() !== "") {
+        query = query.ilike("title", `%${search}%`);
+      }
+
+      const { data } = await query.order("id", { ascending: true });
+      setProducts(data);
+    };
+
+    fetchProducts();
+  }, [search, category]);
+
+  const add = (e, p) => {
+    e.stopPropagation();
+    addToCart(p);
+    alert(`Đã thêm ${p.title} vào giỏ hàng!`);
   };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h2>Danh sách sản phẩm</h2>
+    <div className="container mt-4">
 
-      <div
-        style={{
-          display: "grid",
-          width: "1000px",
-          gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
-          gap: "20px",
-        }}
-      >
-        {listProduct.map((p) => (
-          <div
-            key={p.id}
-            // Sự kiện click vào thẻ -> Chuyển sang trang chi tiết
-            onClick={() => navigate(`/detail/${p.id}`)}
-            style={{
-              border: "1px solid #ddd",
-              borderRadius: "10px",
-              padding: "12px",
-              textAlign: "center",
-              cursor: "pointer",
-              background: "#fff",
-              boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
-              transition: "transform 0.2s ease, box-shadow 0.2s ease",
-              display: "flex", // Flex để căn chỉnh chiều cao
-              flexDirection: "column",
-              justifyContent: "space-between",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = "translateY(-4px)";
-              e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.15)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = "translateY(0)";
-              e.currentTarget.style.boxShadow = "0 2px 6px rgba(0,0,0,0.1)";
-            }}
+      <h2 className="text-center mb-4 fw-bold">🛒 TẤT CẢ SẢN PHẨM</h2>
+
+      {/* Bộ lọc */}
+      <div className="row mb-4">
+        <div className="col-md-4">
+          <input
+            type="text"
+            className="form-control"
+            placeholder="🔍 Tìm sản phẩm..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
+
+        <div className="col-md-4">
+          <select
+            className="form-select"
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
           >
-            {/* Phần nội dung sản phẩm */}
-            <div>
-              <div
-                style={{
-                  width: "100%",
-                  height: "200px",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  overflow: "hidden",
-                  borderRadius: "8px",
-                  backgroundColor: "#f9f9f9",
-                }}
-              >
-                <img
-                  src={p.image}
-                  alt={p.title}
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "cover",
-                  }}
-                />
-              </div>
+            <option value="all">Tất cả danh mục</option>
+            {categories.map((c, i) => (
+              <option key={i} value={c}>{c}</option>
+            ))}
+          </select>
+        </div>
+      </div>
 
-              <h4
-                style={{
-                  margin: "10px 0 5px",
-                  fontSize: "1rem",
-                  minHeight: "40px",
-                }}
-              >
-                {p.title}
-              </h4>
-              <p style={{ color: "#e63946", fontWeight: "bold", margin: "0" }}>
-                ${p.price}
-              </p>
-              <small
-                style={{
-                  color: "#555",
-                  display: "block",
-                  marginBottom: "10px",
-                }}
-              >
-                ⭐ {p.rating_rate} | ({p.rating_count} đánh giá)
-              </small>
-            </div>
-
-            {/* ✅ 3. Nút Thêm vào giỏ */}
-            <button
-              onClick={(e) => handleAddToCart(e, p)} // Truyền event 'e' vào
-              style={{
-                width: "100%",
-                padding: "10px",
-                backgroundColor: "#007bff",
-                color: "white",
-                border: "none",
-                borderRadius: "6px",
-                cursor: "pointer",
-                fontWeight: "600",
-                marginTop: "10px",
-                transition: "background 0.2s",
-              }}
-              onMouseOver={(e) =>
-                (e.currentTarget.style.backgroundColor = "#0056b3")
-              }
-              onMouseOut={(e) =>
-                (e.currentTarget.style.backgroundColor = "#007bff")
-              }
+      {/* Danh sách sản phẩm */}
+      <div className="row">
+        {products.map((p) => (
+          <div className="col-md-3 mb-4" key={p.id}>
+            <div
+              className="card shadow-sm h-100"
+              onClick={() => navigate(`/detail/${p.id}`)}
+              style={{ cursor: "pointer" }}
             >
-              🛒 Thêm vào giỏ
-            </button>
+              <img
+                src={p.image}
+                className="card-img-top"
+                style={{ height: "200px", objectFit: "cover" }}
+                alt={p.title}
+              />
+              <div className="card-body text-center">
+                <h6 className="card-title">{p.title}</h6>
+                <p className="text-danger fw-bold">${p.price}</p>
+                <button
+                  className="btn btn-primary w-100"
+                  onClick={(e) => add(e, p)}
+                >
+                  🛍 Thêm vào giỏ
+                </button>
+              </div>
+            </div>
           </div>
         ))}
       </div>
+
     </div>
   );
 };
